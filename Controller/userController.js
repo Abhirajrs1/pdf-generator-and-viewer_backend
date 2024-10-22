@@ -113,7 +113,16 @@ const userController={
           logger.error(`Error regenerating PDF: ${error.message}`);
           return res.status(500).json({ success: false, message: "Error regenerating PDF" });
         }
-      },    
+      }, 
+      deletePdf:async(req,res)=>{
+        try {
+            const pdfId=req.params.id
+            const deletePdf=await User.findByIdAndDelete({})
+        } catch (error) {
+            
+        }
+
+      }, 
     logout:async(req,res)=>{
         try {
             res.clearCookie('token')
