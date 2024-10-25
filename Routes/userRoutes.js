@@ -3,7 +3,15 @@ import multer from 'multer'
 import userController from '../Controller/userController.js'
 import Middleware from '../Middleware/authMiddleware.js'
 const authMiddleware=Middleware.userMiddleware
-const storage=multer.memoryStorage()
+const storage=multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); 
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = `${Date.now()}-${file.originalname}`;
+        cb(null, uniqueSuffix); 
+    }
+});
 const upload=multer({storage:storage})
 
 

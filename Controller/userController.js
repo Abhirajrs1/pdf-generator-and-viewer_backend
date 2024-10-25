@@ -63,8 +63,9 @@ const userController={
             if(!req.file){
                 return res.status(400).json({ success: false, message: "No file uploaded" });
             }
+            const filePath = `uploads/${req.file.filename}`
             const updatedUser=await User.findByIdAndUpdate({_id:id},{
-                $push:{uploadedFile:req.file.buffer}
+                $push:{uploadedFile:filePath}
             },{new:true})
             logger.info(`PDF uploaded successfully by user: ${req.user.email}`);
             res.status(200).json({ success: true, message: "PDF uploaded successfully", user: updatedUser });

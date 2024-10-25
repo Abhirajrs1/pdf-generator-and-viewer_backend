@@ -4,11 +4,16 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import mongoose from 'mongoose'
 import session from 'express-session';
+import path from 'path';
+import { fileURLToPath } from 'url'; 
 import { UserRouter } from './Routes/userRoutes.js'
 dotenv.config()
 
 const app = express()
 const port = process.env.PORT || 3000;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const connectDB = async () => {
   const dbURI = process.env.MONGODB_URL_COMPASS
@@ -42,7 +47,7 @@ app.use(session({
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/', UserRouter)
 
 connectDB().then(() => {

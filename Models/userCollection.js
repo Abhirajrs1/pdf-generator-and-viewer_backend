@@ -10,7 +10,7 @@ let UserSchema=new mongoose.Schema({
         type:String
     },
     uploadedFile:[{
-        type:Buffer
+        type:String
     }]
 })
 export const User=mongoose.model('User',UserSchema)
