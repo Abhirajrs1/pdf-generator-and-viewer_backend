@@ -3,6 +3,11 @@ import bcrypt from 'bcrypt'
 import logger from "../Utilis/logger.js";
 import jwt from 'jsonwebtoken'
 import { PDFDocument } from 'pdf-lib';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -74,7 +79,7 @@ const userController={
             res.status(500).json({ success: false, message: "Error uploading PDF" });
         }
     },
-    fetchPdf :async (req, res) => {
+    fetchPdf: async (req, res) => {
         try {
             const userId = req.user._id;
             const user = await User.findById(userId);
@@ -82,12 +87,25 @@ const userController={
             if (!user || !user.uploadedFile || user.uploadedFile.length === 0) {
                 return res.status(404).json({ success: false, message: "No PDF files found for this user." });
             }
+            const pdfFiles = await Promise.all(
+                user.uploadedFile.map((filePath, index) => {
+                    const absolutePath = path.join(__dirname, '..', filePath);
     
-            const pdfFiles = user.uploadedFile.map((buffer, index) => ({
-                fileName: `user_${userId}_file_${index + 1}.pdf`,
-                base64: buffer.toString('base64'),  
-            }));
-    
+                    return new Promise((resolve, reject) => {
+                        fs.readFile(absolutePath, (err, data) => {
+                            if (err) {
+                                logger.warn(`File not found at path ${absolutePath}`);
+                                return reject(new Error(`File not found at ${filePath}`));
+                            }
+                            resolve({
+                                fileName: `user_${userId}_file_${index + 1}.pdf`,
+                                base64: data.toString('base64'),
+                            });
+                        });
+                    });
+                })
+            );
+            logger.info(`PDF fetched successfully by user: ${req.user.email}`);
             res.status(200).json({ success: true, message: "PDF files retrieved successfully", pdfs: pdfFiles });
         } catch (error) {
             logger.error(`Error fetching PDFs for user ${req.user.email}: ${error.message}`);
@@ -114,15 +132,6 @@ const userController={
           logger.error(`Error regenerating PDF: ${error.message}`);
           return res.status(500).json({ success: false, message: "Error regenerating PDF" });
         }
-      }, 
-      deletePdf:async(req,res)=>{
-        try {
-            const pdfId=req.params.id
-            const deletePdf=await User.findByIdAndDelete({})
-        } catch (error) {
-            
-        }
-
       }, 
     logout:async(req,res)=>{
         try {

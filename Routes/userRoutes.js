@@ -25,7 +25,6 @@ router.get('/verify',authMiddleware,userController.isVerify)
 router.post('/upload-pdf',authMiddleware,upload.single('pdf'),userController.uploadPdf)
 router.get('/fetchPdf',authMiddleware,userController.fetchPdf)
 router.post('/regenerate-pdf',authMiddleware,userController.regeneratePdf)
-router.delete('/delete-pdf/:id',authMiddleware,userController.deletePdf)
 router.get('/logout',authMiddleware,userController.logout)
 
 
