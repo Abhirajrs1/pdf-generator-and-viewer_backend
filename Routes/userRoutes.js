@@ -32,9 +32,4 @@ router.get('/logout',authMiddleware,userController.logout)
 
 
 
-
-
-
-
-
 export {router as UserRouter}

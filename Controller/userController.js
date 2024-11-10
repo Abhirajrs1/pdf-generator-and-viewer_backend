@@ -20,7 +20,7 @@ const userController={
             const existingUser=await User.findOne({email:email})
             if(existingUser){
                 logger.warn(`Signup failed: User with email ${email} already exists.`);
-                return res.status(400).json({success:false,message:"User already registered"})
+                return res.json({success:false,message:"User already registered"})
             }
             const newUser=new User({
                 name:name,
@@ -132,7 +132,7 @@ const userController={
           logger.error(`Error regenerating PDF: ${error.message}`);
           return res.status(500).json({ success: false, message: "Error regenerating PDF" });
         }
-      }, 
+      },    
     logout:async(req,res)=>{
         try {
             res.clearCookie('token')
