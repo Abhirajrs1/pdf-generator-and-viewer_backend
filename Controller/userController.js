@@ -111,28 +111,7 @@ const userController={
             logger.error(`Error fetching PDFs for user ${req.user.email}: ${error.message}`);
             res.status(500).json({ success: false, message: "Error fetching PDF files" });
         }
-    },
-    regeneratePdf: async (req, res) => {
-        try {
-          const { selectedPages, pdf } = req.body;
-          const originalPdfBytes = Uint8Array.from(atob(pdf), c => c.charCodeAt(0));
-          const originalPdfDoc = await PDFDocument.load(originalPdfBytes);
-          const newPdfDoc = await PDFDocument.create();
-    
-          for (const pageNumber of selectedPages) {
-            const [copiedPage] = await newPdfDoc.copyPages(originalPdfDoc, [pageNumber - 1]);
-            newPdfDoc.addPage(copiedPage);
-          }
-    
-          const newPdfBytes = await newPdfDoc.save();
-          const newBase64 = btoa(String.fromCharCode(...newPdfBytes));
-    
-          return res.status(200).json({ success: true, newPdf: newBase64 });
-        } catch (error) {
-          logger.error(`Error regenerating PDF: ${error.message}`);
-          return res.status(500).json({ success: false, message: "Error regenerating PDF" });
-        }
-      },    
+    },  
     logout:async(req,res)=>{
         try {
             res.clearCookie('token')
